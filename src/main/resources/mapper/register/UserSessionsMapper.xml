@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ccq.register.mapper.UserSessionsMapper">
+    
+    <resultMap type="UserSessions" id="UserSessionsResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="token"    column="token"    />
+        <result property="expiresAt"    column="expires_at"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="lastAccessedAt"    column="last_accessed_at"    />
+    </resultMap>
+
+    <sql id="selectUserSessionsVo">
+        select id, user_id, token, expires_at, created_at, last_accessed_at from user_sessions
+    </sql>
+
+    <select id="selectUserSessionsList" parameterType="UserSessions" resultMap="UserSessionsResult">
+        <include refid="selectUserSessionsVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="token != null  and token != ''"> and token = #{token}</if>
+            <if test="expiresAt != null "> and expires_at = #{expiresAt}</if>
+            <if test="createdAt != null "> and created_at = #{createdAt}</if>
+            <if test="lastAccessedAt != null "> and last_accessed_at = #{lastAccessedAt}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserSessionsById" parameterType="Long" resultMap="UserSessionsResult">
+        <include refid="selectUserSessionsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertUserSessions" parameterType="UserSessions" useGeneratedKeys="true" keyProperty="id">
+        insert into user_sessions
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="token != null">token,</if>
+            <if test="expiresAt != null">expires_at,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="lastAccessedAt != null">last_accessed_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="token != null">#{token},</if>
+            <if test="expiresAt != null">#{expiresAt},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="lastAccessedAt != null">#{lastAccessedAt},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserSessions" parameterType="UserSessions">
+        update user_sessions
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="token != null">token = #{token},</if>
+            <if test="expiresAt != null">expires_at = #{expiresAt},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="lastAccessedAt != null">last_accessed_at = #{lastAccessedAt},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserSessionsById" parameterType="Long">
+        delete from user_sessions where id = #{id}
+    </delete>
+
+    <delete id="deleteUserSessionsByIds" parameterType="String">
+        delete from user_sessions where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
