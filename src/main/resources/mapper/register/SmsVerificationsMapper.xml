@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ccq.register.mapper.SmsVerificationsMapper">
+    
+    <resultMap type="SmsVerifications" id="SmsVerificationsResult">
+        <result property="id"    column="id"    />
+        <result property="phone"    column="phone"    />
+        <result property="code"    column="code"    />
+        <result property="expiresAt"    column="expires_at"    />
+        <result property="isUsed"    column="is_used"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="attemptCount"    column="attempt_count"    />
+    </resultMap>
+
+    <sql id="selectSmsVerificationsVo">
+        select id, phone, code, expires_at, is_used, created_at, attempt_count from sms_verifications
+    </sql>
+
+    <select id="selectSmsVerificationsList" parameterType="SmsVerifications" resultMap="SmsVerificationsResult">
+        <include refid="selectSmsVerificationsVo"/>
+        <where>  
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="expiresAt != null "> and expires_at = #{expiresAt}</if>
+            <if test="isUsed != null "> and is_used = #{isUsed}</if>
+            <if test="createdAt != null "> and created_at = #{createdAt}</if>
+            <if test="attemptCount != null  and attemptCount != ''"> and attempt_count = #{attemptCount}</if>
+        </where>
+    </select>
+    
+    <select id="selectSmsVerificationsById" parameterType="Long" resultMap="SmsVerificationsResult">
+        <include refid="selectSmsVerificationsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSmsVerifications" parameterType="SmsVerifications" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_verifications
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="phone != null">phone,</if>
+            <if test="code != null">code,</if>
+            <if test="expiresAt != null">expires_at,</if>
+            <if test="isUsed != null">is_used,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="attemptCount != null">attempt_count,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="phone != null">#{phone},</if>
+            <if test="code != null">#{code},</if>
+            <if test="expiresAt != null">#{expiresAt},</if>
+            <if test="isUsed != null">#{isUsed},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="attemptCount != null">#{attemptCount},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSmsVerifications" parameterType="SmsVerifications">
+        update sms_verifications
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="code != null">code = #{code},</if>
+            <if test="expiresAt != null">expires_at = #{expiresAt},</if>
+            <if test="isUsed != null">is_used = #{isUsed},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="attemptCount != null">attempt_count = #{attemptCount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsVerificationsById" parameterType="Long">
+        delete from sms_verifications where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsVerificationsByIds" parameterType="String">
+        delete from sms_verifications where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
